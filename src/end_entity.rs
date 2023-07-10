@@ -15,8 +15,9 @@
 #[cfg(feature = "alloc")]
 use crate::subject_name::GeneralDnsNameRef;
 use crate::{
-    cert, signed_data, subject_name, verify_cert, CertRevocationList, Error, SignatureAlgorithm,
-    SubjectNameRef, Time, TlsClientTrustAnchors, TlsServerTrustAnchors,
+    cert, signed_data, subject_name, verify_cert, CertRevocationList, Error, KeyPurposeId,
+    SignatureAlgorithm, SubjectNameRef, Time, TlsClientTrustAnchors, TlsServerTrustAnchors,
+    TrustAnchor,
 };
 
 /// An end-entity certificate.
@@ -72,6 +73,37 @@ impl<'a> TryFrom<&'a [u8]> for EndEntityCert<'a> {
 impl<'a> EndEntityCert<'a> {
     pub(super) fn inner(&self) -> &cert::Cert {
         &self.inner
+    }
+
+    /// Verifies that the end-entity certificate is valid for use against the
+    /// specified EKU (Extended Key Use).
+    ///
+    /// `supported_sig_algs` is the list of signature algorithms that are
+    /// trusted for use in certificate signatures; the end-entity certificate's
+    /// public key is not validated against this list. `trust_anchors` is the
+    /// list of root CAs to trust. `intermediate_certs` is the sequence of
+    /// intermediate certificates that the server sent in the TLS handshake.
+    /// `time` is the time for which the validation is effective (usually the
+    /// current time).
+    pub fn verify_is_valid_cert_with_eku(
+        &self,
+        required_eku: KeyPurposeId,
+        supported_sig_algs: &[&SignatureAlgorithm],
+        trust_anchors: &[TrustAnchor],
+        intermediate_certs: &[&[u8]],
+        time: Time,
+    ) -> Result<(), Error> {
+        verify_cert::build_chain(
+            &verify_cert::ChainOptions {
+                required_eku_if_present: required_eku,
+                supported_sig_algs,
+                trust_anchors,
+                intermediate_certs,
+                crls: &[],
+            },
+            &self.inner,
+            time,
+        )
     }
 
     /// Verifies that the end-entity certificate is valid for use by a TLS

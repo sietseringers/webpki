@@ -341,9 +341,21 @@ fn check_basic_constraints(
     }
 }
 
+/// An OID value indicating the Extended Key Usage (EKU) of the certificate.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(crate) struct KeyPurposeId {
+pub struct KeyPurposeId {
     oid_value: untrusted::Input<'static>,
+}
+
+impl KeyPurposeId {
+    /// Construct a new [`KeyPurposeId`].
+    ///
+    /// `oid` is the OBJECT IDENTIFIER in bytes.
+    pub fn new(oid: &'static [u8]) -> Result<Self, Error> {
+        Ok(KeyPurposeId {
+            oid_value: untrusted::Input::from(oid),
+        })
+    }
 }
 
 // id-pkix            OBJECT IDENTIFIER ::= { 1 3 6 1 5 5 7 }
