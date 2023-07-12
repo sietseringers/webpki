@@ -351,10 +351,10 @@ impl KeyPurposeId {
     /// Construct a new [`KeyPurposeId`].
     ///
     /// `oid` is the OBJECT IDENTIFIER in bytes.
-    pub fn new(oid: &'static [u8]) -> Result<Self, Error> {
-        Ok(KeyPurposeId {
+    pub const fn new(oid: &'static [u8]) -> Self {
+        KeyPurposeId {
             oid_value: untrusted::Input::from(oid),
-        })
+        }
     }
 }
 
