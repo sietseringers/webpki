@@ -92,6 +92,7 @@ impl<'a> EndEntityCert<'a> {
         trust_anchors: &[TrustAnchor],
         intermediate_certs: &[&[u8]],
         time: Time,
+        crls: &[&dyn CertRevocationList],
     ) -> Result<(), Error> {
         verify_cert::build_chain(
             &verify_cert::ChainOptions {
@@ -99,7 +100,7 @@ impl<'a> EndEntityCert<'a> {
                 supported_sig_algs,
                 trust_anchors,
                 intermediate_certs,
-                crls: &[],
+                crls,
             },
             &self.inner,
             time,
@@ -123,16 +124,13 @@ impl<'a> EndEntityCert<'a> {
         intermediate_certs: &[&[u8]],
         time: Time,
     ) -> Result<(), Error> {
-        verify_cert::build_chain(
-            &verify_cert::ChainOptions {
-                eku: ExtendedKeyUsage::RequiredIfPresent(verify_cert::EKU_SERVER_AUTH),
-                supported_sig_algs,
-                trust_anchors,
-                intermediate_certs,
-                crls: &[],
-            },
-            &self.inner,
+        self.verify_is_valid_cert_with_eku(
+            ExtendedKeyUsage::RequiredIfPresent(verify_cert::EKU_SERVER_AUTH),
+            supported_sig_algs,
+            trust_anchors,
+            intermediate_certs,
             time,
+            &[],
         )
     }
 
@@ -155,16 +153,13 @@ impl<'a> EndEntityCert<'a> {
         time: Time,
         crls: &[&dyn CertRevocationList],
     ) -> Result<(), Error> {
-        verify_cert::build_chain(
-            &verify_cert::ChainOptions {
-                eku: ExtendedKeyUsage::RequiredIfPresent(verify_cert::EKU_CLIENT_AUTH),
-                supported_sig_algs,
-                trust_anchors,
-                intermediate_certs,
-                crls,
-            },
-            &self.inner,
+        self.verify_is_valid_cert_with_eku(
+            ExtendedKeyUsage::RequiredIfPresent(verify_cert::EKU_CLIENT_AUTH),
+            supported_sig_algs,
+            trust_anchors,
+            intermediate_certs,
             time,
+            crls,
         )
     }
 
