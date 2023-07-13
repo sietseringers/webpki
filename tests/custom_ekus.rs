@@ -23,10 +23,12 @@ fn check_cert(
     );
 }
 
+#[cfg(feature = "alloc")]
 #[allow(clippy::identity_op)]
 static EKU_CLIENT_AUTH: webpki::KeyPurposeId =
     webpki::KeyPurposeId::new(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 2]);
 
+#[cfg(feature = "alloc")]
 #[allow(clippy::identity_op)]
 static EKU_SERVER_AUTH: webpki::KeyPurposeId =
     webpki::KeyPurposeId::new(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 1]);
