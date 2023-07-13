@@ -76,7 +76,7 @@ impl<'a> EndEntityCert<'a> {
     }
 
     /// Verifies that the end-entity certificate is valid for use against the
-    /// specified EKU (Extended Key Use).
+    /// specified Extended Key Usage (EKU).
     ///
     /// `supported_sig_algs` is the list of signature algorithms that are
     /// trusted for use in certificate signatures; the end-entity certificate's
