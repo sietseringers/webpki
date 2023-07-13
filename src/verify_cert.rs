@@ -374,21 +374,18 @@ impl KeyPurposeId {
 
 // id-kp-serverAuth   OBJECT IDENTIFIER ::= { id-kp 1 }
 #[allow(clippy::identity_op)] // TODO: Make this clearer
-pub(crate) static EKU_SERVER_AUTH: KeyPurposeId = KeyPurposeId {
-    oid_value: untrusted::Input::from(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 1]),
-};
+pub(crate) static EKU_SERVER_AUTH: KeyPurposeId =
+    KeyPurposeId::new(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 1]);
 
 // id-kp-clientAuth   OBJECT IDENTIFIER ::= { id-kp 2 }
 #[allow(clippy::identity_op)] // TODO: Make this clearer
-pub(crate) static EKU_CLIENT_AUTH: KeyPurposeId = KeyPurposeId {
-    oid_value: untrusted::Input::from(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 2]),
-};
+pub(crate) static EKU_CLIENT_AUTH: KeyPurposeId =
+    KeyPurposeId::new(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 2]);
 
 // id-kp-OCSPSigning  OBJECT IDENTIFIER ::= { id-kp 9 }
 #[allow(clippy::identity_op)] // TODO: Make this clearer
-pub(crate) static EKU_OCSP_SIGNING: KeyPurposeId = KeyPurposeId {
-    oid_value: untrusted::Input::from(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 9]),
-};
+pub(crate) static EKU_OCSP_SIGNING: KeyPurposeId =
+    KeyPurposeId::new(&[(40 * 1) + 3, 6, 1, 5, 5, 7, 3, 9]);
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
 fn check_eku(input: Option<&mut untrusted::Reader>, eku: &ExtendedKeyUsage) -> Result<(), Error> {
