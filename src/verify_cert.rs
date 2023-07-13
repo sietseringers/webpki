@@ -352,7 +352,7 @@ impl ExtendedKeyUsage {
     }
 }
 
-/// An OID value indicating the Extended Key Usage (EKU) of the certificate.
+/// An OID value indicating an Extended Key Usage (EKU) key purpose.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct KeyPurposeId {
     oid_value: untrusted::Input<'static>,
