@@ -1,15 +1,3 @@
-static ALL_SIGALGS: &[&webpki::SignatureAlgorithm] = &[
-    &webpki::ECDSA_P256_SHA256,
-    &webpki::ECDSA_P256_SHA384,
-    &webpki::ECDSA_P384_SHA256,
-    &webpki::ECDSA_P384_SHA384,
-    &webpki::ED25519,
-    &webpki::RSA_PKCS1_2048_8192_SHA256,
-    &webpki::RSA_PKCS1_2048_8192_SHA384,
-    &webpki::RSA_PKCS1_2048_8192_SHA512,
-    &webpki::RSA_PKCS1_3072_8192_SHA384,
-];
-
 #[cfg(feature = "alloc")]
 fn check_cert(
     ee: &[u8],
@@ -23,7 +11,13 @@ fn check_cert(
     let cert = webpki::EndEntityCert::try_from(ee).unwrap();
 
     assert_eq!(
-        cert.verify_is_valid_cert_with_eku(eku, ALL_SIGALGS, &anchors, &[], time),
+        cert.verify_is_valid_cert_with_eku(
+            eku,
+            &[&webpki::RSA_PKCS1_2048_8192_SHA256],
+            &anchors,
+            &[],
+            time
+        ),
         result
     );
 }
