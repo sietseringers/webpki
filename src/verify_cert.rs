@@ -59,15 +59,12 @@ fn build_chain_inner(
     // for the purpose of name constraints checking, only end-entity server certificates
     // could plausibly have a DNS name as a subject commonName that could contribute to
     // path validity
-    let eku = match opts.eku {
-        ExtendedKeyUsage::Required(eku) => eku,
-        ExtendedKeyUsage::RequiredIfPresent(eku) => eku,
-    };
-    let subject_common_name_contents = if eku == EKU_SERVER_AUTH && used_as_ca == UsedAsCa::No {
-        subject_name::SubjectCommonNameContents::DnsName
-    } else {
-        subject_name::SubjectCommonNameContents::Ignore
-    };
+    let subject_common_name_contents =
+        if opts.eku.key_purpose_id() == EKU_SERVER_AUTH && used_as_ca == UsedAsCa::No {
+            subject_name::SubjectCommonNameContents::DnsName
+        } else {
+            subject_name::SubjectCommonNameContents::Ignore
+        };
 
     let result = loop_while_non_fatal_error(
         Error::UnknownIssuer,
@@ -345,6 +342,16 @@ pub enum ExtendedKeyUsage {
     RequiredIfPresent(KeyPurposeId),
 }
 
+impl ExtendedKeyUsage {
+    /// Get the [`KeyPurposeId`] of either variant.
+    fn key_purpose_id(&self) -> KeyPurposeId {
+        match self {
+            ExtendedKeyUsage::Required(eku) => *eku,
+            ExtendedKeyUsage::RequiredIfPresent(eku) => *eku,
+        }
+    }
+}
+
 /// An OID value indicating the Extended Key Usage (EKU) of the certificate.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct KeyPurposeId {
@@ -385,10 +392,7 @@ pub(crate) static EKU_OCSP_SIGNING: KeyPurposeId = KeyPurposeId {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
 fn check_eku(input: Option<&mut untrusted::Reader>, eku: &ExtendedKeyUsage) -> Result<(), Error> {
-    let key_purpose = match eku {
-        ExtendedKeyUsage::Required(key_purpose) => key_purpose,
-        ExtendedKeyUsage::RequiredIfPresent(key_purpose) => key_purpose,
-    };
+    let key_purpose = eku.key_purpose_id();
     match input {
         Some(input) => {
             loop {
