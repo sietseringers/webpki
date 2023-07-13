@@ -58,3 +58,8 @@ pub fn verify_custom_eku() {
     check_cert(ee, ca, RequiredIfPresent(EKU_CLIENT_AUTH), Ok(()));
     check_cert(ee, ca, RequiredIfPresent(EKU_SERVER_AUTH), Ok(()));
 }
+
+#[test]
+fn key_purpose_id() {
+    webpki::KeyPurposeId::new(&[1, 2, 3]);
+}

@@ -478,3 +478,18 @@ where
     }
     Err(error)
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{verify_cert::EKU_SERVER_AUTH, ExtendedKeyUsage};
+
+    #[test]
+    fn eku_key_purpose_id() {
+        assert_eq!(
+            ExtendedKeyUsage::Required(EKU_SERVER_AUTH)
+                .key_purpose_id()
+                .oid_value,
+            EKU_SERVER_AUTH.oid_value
+        )
+    }
+}
